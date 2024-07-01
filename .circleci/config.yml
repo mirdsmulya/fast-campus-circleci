@@ -62,10 +62,10 @@ workflows:
             - test-go
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/ # Only run this job when a tag is pushed
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/ # Only run this job when a tag is pushed via git tag -a v0.1.0 -m "Release v0.1.0"
       - deploy-to-eks:
           requires:
             - build-and-push-image
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/ # Only run this job when a tag is pushed
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/ # Only run this job when a tag is pushed via git tag -a v0.1.0 -m "Release v0.1.0"
