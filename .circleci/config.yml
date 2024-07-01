@@ -54,7 +54,7 @@ jobs:
             helm upgrade --install $HELM_CHART_NAME $HELM_CHART_PATH -f $HELM_CHART_PATH/values.yaml --namespace $KUBERNETES_NAMESPACE --set image.tag=${CIRCLE_TAG}
 
 workflows:
-  build-and-test:
+  CI-CD-EKS:
     jobs:
       - test-go
       - build-and-push-image:
