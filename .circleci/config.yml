@@ -1,5 +1,3 @@
-# This config was automatically generated from your source code
-# Stacks detected: artifact:go-executable:,deps:go:.
 version: 2.1
 jobs:
   test-go:
@@ -17,8 +15,6 @@ jobs:
 
   build-and-push-image:
     docker:
-      # - image: circleci/aws-cli
-      # - image: circleci/docker:19.03.12
       - image: mirdsmulya/aws-docker # This is a custom image that contains aws-cli and docker
     environment:
       DOCKER_DRIVER: overlay2
@@ -35,15 +31,11 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
-            # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_TAG} .
-            # docker push $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_TAG}
-            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_SHA1} .
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_SHA1}
+            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_TAG} .
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_TAG}
 
   deploy-to-eks:
     docker:
-      # - image: circleci/aws-cli
-      # - image: lachlanevenson/k8s-helm
       - image: mirdsmulya/aws-helm # This is a custom image that contains aws-cli and helm
     environment:
       AWS_DEFAULT_REGION: "ap-southeast-1"
@@ -59,8 +51,7 @@ jobs:
       - run:
           name: Deploy to EKS using Helm
           command: |
-            # helm upgrade --install $HELM_CHART_NAME $HELM_CHART_PATH -f $HELM_CHART_PATH/values.yaml --namespace $KUBERNETES_NAMESPACE --set image.tag=${CIRCLE_TAG}
-            helm upgrade --install $HELM_CHART_NAME $HELM_CHART_PATH -f $HELM_CHART_PATH/values.yaml --namespace $KUBERNETES_NAMESPACE --set image.tag=${CIRCLE_SHA1}
+            helm upgrade --install $HELM_CHART_NAME $HELM_CHART_PATH -f $HELM_CHART_PATH/values.yaml --namespace $KUBERNETES_NAMESPACE --set image.tag=${CIRCLE_TAG}
 
 workflows:
   build-and-test:
@@ -69,6 +60,12 @@ workflows:
       - build-and-push-image:
           requires:
             - test-go
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/ # Only run this job when a tag is pushed
       - deploy-to-eks:
           requires:
             - build-and-push-image
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/ # Only run this job when a tag is pushed
