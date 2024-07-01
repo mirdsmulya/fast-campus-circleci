@@ -17,8 +17,9 @@ jobs:
 
   build-and-push-image:
     docker:
-      - image: circleci/aws-cli
-      - image: circleci/docker:19.03.12
+      # - image: circleci/aws-cli
+      # - image: circleci/docker:19.03.12
+      - image: mirdsmulya/aws-docker # This is a custom image that contains aws-cli and docker
     environment:
       DOCKER_DRIVER: overlay2
       AWS_DEFAULT_REGION: "ap-southeast-1"
@@ -41,8 +42,9 @@ jobs:
 
   deploy-to-eks:
     docker:
-      - image: circleci/aws-cli
-      - image: lachlanevenson/k8s-helm
+      # - image: circleci/aws-cli
+      # - image: lachlanevenson/k8s-helm
+      - image: mirdsmulya/aws-helm # This is a custom image that contains aws-cli and helm
     environment:
       AWS_DEFAULT_REGION: "ap-southeast-1"
       EKS_CLUSTER_NAME: "fast-campus-cluster"
@@ -59,15 +61,7 @@ jobs:
           command: |
             # helm upgrade --install $HELM_CHART_NAME $HELM_CHART_PATH -f $HELM_CHART_PATH/values.yaml --namespace $KUBERNETES_NAMESPACE --set image.tag=${CIRCLE_TAG}
             helm upgrade --install $HELM_CHART_NAME $HELM_CHART_PATH -f $HELM_CHART_PATH/values.yaml --namespace $KUBERNETES_NAMESPACE --set image.tag=${CIRCLE_SHA1}
-  deploy:
-    # This is an example deploy job, not actually used by the workflow
-    docker:
-      - image: cimg/base:stable
-    steps:
-      # Replace this with steps to deploy to users
-      - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+
 workflows:
   build-and-test:
     jobs:
