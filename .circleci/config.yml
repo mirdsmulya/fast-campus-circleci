@@ -1,7 +1,6 @@
 version: 2.1
 jobs:
   test-go:
-    # Install go modules and run tests
     docker:
       - image: cimg/go:1.22
     steps:
@@ -22,13 +21,12 @@ jobs:
       ECR_REGISTRY: "675327529402.dkr.ecr.ap-southeast-1.amazonaws.com"
       ECR_REPOSITORY: "fast-campus"
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: false
+      - setup_remote_docker
       - checkout
       - run:
           name: Login to ECR
           command: |
-            echo $(aws ecr get-login-password --region $AWS_DEFAULT_REGION) | docker login --username AWS --password-stdin $ECR_REGISTRY
+            aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
       - run:
           name: Build and push Docker image
           command: |
