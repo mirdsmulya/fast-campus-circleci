@@ -69,7 +69,7 @@ workflows:
               only: main
       - deploy-to-eks:
           requires:
-            - build-and-push-image
+            - build-and-push-image-to-ecr
           filters:
             branches:
               only: main
