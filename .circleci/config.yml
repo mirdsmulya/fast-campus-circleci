@@ -61,7 +61,7 @@ workflows:
           filters: 
             branches:
               only: main
-      - build-and-push-image:
+      - build-and-push-image-to-ecr:
           requires:
             - test-go
           filters:
