@@ -56,20 +56,23 @@ jobs:
 workflows:
   CI-CD-EKS:
     jobs:
-      - test-go
+      - test-go:
+          filters:  # required since `deploy` has tag filters AND requires `build`
+            tags:
+              only: /.*/
       - build-and-push-image:
           requires:
             - test-go
           filters:
             tags:
               only: /^v.*/
-            branches:
-              ignore: /.*/
+            # branches:
+            #   ignore: /.*/
       - deploy-to-eks:
           requires:
             - build-and-push-image
           filters:
             tags:
               only: /^v.*/
-            branches:
-              ignore: /.*/
+            # branches:
+            #   ignore: /.*/
