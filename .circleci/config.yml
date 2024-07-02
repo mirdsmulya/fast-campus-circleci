@@ -22,7 +22,6 @@ jobs:
       ECR_REGISTRY: "675327529402.dkr.ecr.ap-southeast-1.amazonaws.com"
       ECR_REPOSITORY: "fast-campus"
     steps:
-      - setup_remote_docker
       - checkout
       - run:
           name: Login to ECR
@@ -31,8 +30,8 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
-            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_TAG} .
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_TAG}
+            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_SHA1} .
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_SHA1}
 
   deploy-to-eks:
     docker:
@@ -51,28 +50,24 @@ jobs:
       - run:
           name: Deploy to EKS using Helm
           command: |
-            helm upgrade --install $HELM_CHART_NAME $HELM_CHART_PATH -f $HELM_CHART_PATH/values.yaml --namespace $KUBERNETES_NAMESPACE --set image.tag=${CIRCLE_TAG}
+            helm upgrade --install $HELM_CHART_NAME $HELM_CHART_PATH -f $HELM_CHART_PATH/values.yaml --namespace $KUBERNETES_NAMESPACE --set image.tag=${CIRCLE_SHA1}
 
 workflows:
   CI-CD-EKS:
     jobs:
       - test-go:
-          filters:  # required since `deploy` has tag filters AND requires `build`
-            tags:
-              only: /.*/
+          filters: 
+            branches:
+              only: main
       - build-and-push-image:
           requires:
             - test-go
           filters:
-            tags:
-              only: /^v.*/
-            # branches:
-            #   ignore: /.*/
+            branches:
+              only: main
       - deploy-to-eks:
           requires:
             - build-and-push-image
           filters:
-            tags:
-              only: /^v.*/
-            # branches:
-            #   ignore: /.*/
+            branches:
+              only: main
