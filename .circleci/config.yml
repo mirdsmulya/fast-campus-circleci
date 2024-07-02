@@ -13,7 +13,7 @@ jobs:
           name: Run tests
           command: go test ./...
 
-  build-and-push-image:
+  build-and-push-image-to-ecr:
     docker:
       - image: mirdsmulya/aws-docker # This is a custom image that contains aws-cli and docker
     environment:
@@ -22,6 +22,8 @@ jobs:
       ECR_REGISTRY: "675327529402.dkr.ecr.ap-southeast-1.amazonaws.com"
       ECR_REPOSITORY: "fast-campus"
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: false
       - checkout
       - run:
           name: Login to ECR
