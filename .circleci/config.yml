@@ -1,4 +1,15 @@
 version: 2.1
+
+variables:
+  DOCKER_DRIVER: overlay2
+  AWS_DEFAULT_REGION: "ap-southeast-1"
+  ECR_REGISTRY: "675327529402.dkr.ecr.ap-southeast-1.amazonaws.com"
+  ECR_REPOSITORY: "fast-campus"
+  EKS_CLUSTER_NAME: "fast-campus-cluster"
+  KUBERNETES_NAMESPACE: "app"
+  HELM_CHART_PATH: "deployment/k8s"
+  HELM_CHART_NAME: "hello-world"
+
 jobs:
   test-go:
     docker:
@@ -14,12 +25,7 @@ jobs:
 
   build-and-push-image-to-ecr:
     docker:
-      - image: mirdsmulya/aws-docker # This is a custom image that contains aws-cli and docker
-    environment:
-      DOCKER_DRIVER: overlay2
-      AWS_DEFAULT_REGION: "ap-southeast-1"
-      ECR_REGISTRY: "675327529402.dkr.ecr.ap-southeast-1.amazonaws.com"
-      ECR_REPOSITORY: "fast-campus"
+      - image: mirdsmulya/aws-docker
     steps:
       - setup_remote_docker
       - checkout
@@ -35,13 +41,7 @@ jobs:
 
   deploy-to-eks:
     docker:
-      - image: mirdsmulya/aws-helm # This is a custom image that contains aws-cli and helm
-    environment:
-      AWS_DEFAULT_REGION: "ap-southeast-1"
-      EKS_CLUSTER_NAME: "fast-campus-cluster"
-      KUBERNETES_NAMESPACE: "app"
-      HELM_CHART_PATH: "deployment/k8s"
-      HELM_CHART_NAME: "hello-world"
+      - image: mirdsmulya/aws-helm
     steps:
       - checkout
       - run:
