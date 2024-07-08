@@ -1,4 +1,10 @@
 version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@7.1.0
+  aws-cli: circleci/aws-cli@3.1.0
+  docker: circleci/docker@3.1.0
+
 jobs:
   test-go:
     docker:
@@ -13,25 +19,41 @@ jobs:
           command: go test ./...
 
   build-and-push-image-to-ecr:
-    docker:
-      - image: mirdsmulya/aws-docker # This is a custom image that contains aws-cli and docker
     environment:
-      DOCKER_DRIVER: overlay2
       AWS_DEFAULT_REGION: "ap-southeast-1"
-      ECR_REGISTRY: "675327529402.dkr.ecr.ap-southeast-1.amazonaws.com"
-      ECR_REPOSITORY: "fast-campus"
+      ECR_REPOSITORY: "fast-campus" 
+    docker:
+      - image: circleci/python:3.8
     steps:
-      - setup_remote_docker
       - checkout
-      - run:
-          name: Login to ECR
-          command: |
-            aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
-      - run:
-          name: Build and push Docker image
-          command: |
-            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_SHA1} .
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_SHA1}
+      - aws-cli/setup:
+          profile-name: aws
+      - aws-ecr/build-and-push-image:
+          repo: $ECR_REPOSITORY 
+          tag: $CIRCLE_SHA1
+          region: $AWS_DEFAULT_REGION
+          dockerfile: Dockerfile
+  
+#  build-and-push-image-to-ecr:
+#     docker:
+#       - image: mirdsmulya/aws-docker # This is a custom image that contains aws-cli and docker
+#     environment:
+#       DOCKER_DRIVER: overlay2
+#       AWS_DEFAULT_REGION: "ap-southeast-1"
+#       ECR_REGISTRY: "675327529402.dkr.ecr.ap-southeast-1.amazonaws.com"
+#       ECR_REPOSITORY: "fast-campus"
+#     steps:
+#       - setup_remote_docker
+#       - checkout
+#       - run:
+#           name: Login to ECR
+#           command: |
+#             aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+#       - run:
+#           name: Build and push Docker image
+#           command: |
+#             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_SHA1} .
+#             docker push $ECR_REGISTRY/$ECR_REPOSITORY:${CIRCLE_SHA1}
 
   deploy-to-eks:
     docker:
