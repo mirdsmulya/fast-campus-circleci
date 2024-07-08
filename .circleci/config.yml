@@ -25,9 +25,6 @@ jobs:
       - aws-cli/setup:
           profile-name: aws
       - aws-ecr/build-and-push-image:
-          auth: 
-            - aws-cli/setup:
-                profile-name: aws
           repo: "fast-campus"
           tag: $CIRCLE_SHA1
           region: env_var_name
