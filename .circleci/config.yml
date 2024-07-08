@@ -27,6 +27,7 @@ jobs:
       - aws-cli/setup:
           profile-name: aws
       - aws-ecr/build-and-push-image:
+          profile-name: aws
           repo: "fast-campus"
           tag: $CIRCLE_SHA1
           region: AWS_DEFAULT_REGION
