@@ -36,7 +36,6 @@ jobs:
           dockerfile: "Dockerfile"
           account-url: AWS_ECR_ACCOUNT_URL
   
-  
   deploy-to-eks:
     docker:
       - image: mirdsmulya/aws-helm # This is a custom image that contains aws-cli and helm
