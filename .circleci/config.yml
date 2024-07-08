@@ -1,13 +1,13 @@
 version: 2.1
 
 orbs:
-  aws-ecr: circleci/aws-ecr@9.0
-  aws-cli: circleci/aws-cli@4.0
+  aws-ecr: circleci/aws-ecr@7.1.0
+  aws-cli: circleci/aws-cli@3.1.0
 
 jobs:
   test-go:
-    machine:
-      image: ubuntu-2204:current
+    docker:
+      - image: cimg/go:1.22
     steps:
       - checkout
       - run:
@@ -21,17 +21,20 @@ jobs:
     environment:
       AWS_DEFAULT_REGION: "ap-southeast-1"
       ECR_REPOSITORY: "fast-campus" 
-    executors:
-      - docker-executor
+
     steps:
       - checkout
       - aws-cli/setup:
           profile-name: aws
       - aws-ecr/build-and-push-image:
+          auth: 
+            - aws-cli/setup:
+                profile-name: aws
           repo: $ECR_REPOSITORY 
           tag: $CIRCLE_SHA1
           region: $AWS_DEFAULT_REGION
           dockerfile: Dockerfile
+          account_id: "675327529402"
   
 #  build-and-push-image-to-ecr:
 #     docker:
