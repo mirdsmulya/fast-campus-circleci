@@ -1,20 +1,13 @@
 version: 2.1
 
 orbs:
-  aws-ecr: circleci/aws-ecr@7.1.0
-  aws-cli: circleci/aws-cli@3.1.0
-  docker: circleci/docker@3.1.0
-
-executors:
-  docker-executor:
-    docker:
-      - image: circleci/python:3.8
-    working_directory: ~/repo
+  aws-ecr: circleci/aws-ecr@9.0
+  aws-cli: circleci/aws-cli@4.0
 
 jobs:
   test-go:
-    docker:
-      - image: cimg/go:1.22
+    machine:
+      image: ubuntu-2204:current
     steps:
       - checkout
       - run:
