@@ -21,7 +21,8 @@ jobs:
     environment:
       AWS_DEFAULT_REGION: "ap-southeast-1"
       ECR_REPOSITORY: "fast-campus" 
-
+    docker:
+      - image: cimg/go:1.22
     steps:
       - checkout
       - aws-cli/setup:
