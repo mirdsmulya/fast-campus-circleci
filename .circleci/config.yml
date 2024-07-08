@@ -18,6 +18,8 @@ jobs:
           command: go test ./...
 
   build-and-push-image-to-ecr:
+    environment:
+      AWS_DEFAULT_REGION: "ap-southeast-1"
     docker:
       - image: cimg/go:1.22
     steps:
@@ -27,7 +29,7 @@ jobs:
       - aws-ecr/build-and-push-image:
           repo: "fast-campus"
           tag: $CIRCLE_SHA1
-          region: env_var_name
+          region: AWS_DEFAULT_REGION
           dockerfile: "Dockerfile"
   
   
