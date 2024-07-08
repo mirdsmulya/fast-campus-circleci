@@ -30,8 +30,8 @@ jobs:
                 profile-name: aws
           repo: "fast-campus"
           tag: $CIRCLE_SHA1
-          region: ap-southeast-1
-          dockerfile: Dockerfile
+          region: "ap-southeast-1"
+          dockerfile: "Dockerfile"
           account_id: "675327529402"
   
   deploy-to-eks:
