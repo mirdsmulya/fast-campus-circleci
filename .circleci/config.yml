@@ -18,9 +18,6 @@ jobs:
           command: go test ./...
 
   build-and-push-image-to-ecr:
-    environment:
-      AWS_DEFAULT_REGION: "ap-southeast-1"
-      ECR_REPOSITORY: "fast-campus" 
     docker:
       - image: cimg/go:1.22
     steps:
@@ -31,9 +28,9 @@ jobs:
           auth: 
             - aws-cli/setup:
                 profile-name: aws
-          repo: $ECR_REPOSITORY 
+          repo: "fast-campus"
           tag: $CIRCLE_SHA1
-          region: $AWS_DEFAULT_REGION
+          region: ap-southeast-1
           dockerfile: Dockerfile
           account_id: "675327529402"
   
