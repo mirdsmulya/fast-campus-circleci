@@ -32,7 +32,7 @@ jobs:
           tag: $CIRCLE_SHA1
           region: env_var_name
           dockerfile: "Dockerfile"
-          account_id: "675327529402"
+  
   
   deploy-to-eks:
     docker:
